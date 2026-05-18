@@ -6,17 +6,51 @@ Harness versioning and evaluation for Spring AI applications.
 
 ## Why
 
-LLM applications depend not just on the model but on the **harness** around it:
-prompts, retrieval config, tools, and memory. Reins lets you version harnesses,
-run them against eval datasets, and compare results — natively in Spring AI.
+Prompt changes silently regress LLM applications. Reins helps you catch this:
+
+- Mark a prompt + retrieval + tool config as a versioned unit with `@Harness`
+- Run automated evals on every PR via JUnit 5 — embedding similarity, pass/fail
+- Persist JSON reports as CI artifacts and diff results across harness versions
 
 Inspired by Stanford IRIS Lab's [Meta-Harness](https://arxiv.org/abs/2603.28052).
 
 ## Status
 
-Early development (v0.1.0). API may change.
+v0.1.0 — early but functional. A production-shaped reference demo lives at
+[roz-labs/reins-demo](https://github.com/roz-labs/reins-demo). The API may
+evolve based on feedback before v1.0.
+
+## Requirements
+
+- Java 21+
+- Spring Boot 3.3+
+- Spring AI 1.1+
+
+## Installation
+
+Not yet published to Maven Central. For now, install locally:
+
+```bash
+git clone https://github.com/roz-labs/reins.git
+cd reins
+mvn clean install
+```
+
+Then add the dependency to your project as shown in Quick Start below.
 
 ## Example project
+
+Reins produces case-level comparisons between harness versions, like this:
+
+```
+Case                       v1-baseline        v2-detailed        Delta
+out-of-scope-phone         FAIL (0.587)       PASS (1.000)       +0.413
+ambiguous-2fa              PASS (0.756)       FAIL (0.539)       -0.217
+refund-window              PASS (0.701)       PASS (0.831)       +0.131
+...
+Pass rate:                 v1=7/10 (70%)      v2=7/10 (70%)
+Avg similarity:            v1=0.742           v2=0.770
+```
 
 A reference RAG demo using Reins lives at
 [roz-labs/reins-demo](https://github.com/roz-labs/reins-demo). It
@@ -42,6 +76,13 @@ Runs locally on Ollama; no API keys, no cloud dependency.
 ```java
 @Harness(name = "support-agent", version = "v1")
 public class SupportHarness implements ReinsHarness {
+
+    private final ChatClient chatClient;
+
+    public SupportHarness(ChatClient.Builder builder) {
+        this.chatClient = build(builder);
+    }
+
     @Override
     public ChatClient build(ChatClient.Builder builder) {
         return builder
@@ -51,7 +92,7 @@ public class SupportHarness implements ReinsHarness {
 
     @Override
     public String ask(String input) {
-        return build(/* injected builder */).prompt(input).call().content();
+        return chatClient.prompt().user(input).call().content();
     }
 }
 ```
@@ -62,8 +103,11 @@ public class SupportHarness implements ReinsHarness {
 
 ```json
 [
-  {"id": "refund", "input": "What's your refund policy?",
-   "expected": "Refunds within 30 days."}
+  {
+    "id": "refund",
+    "input": "What's your refund policy?",
+    "expected": "Refunds within 30 days."
+  }
 ]
 ```
 
