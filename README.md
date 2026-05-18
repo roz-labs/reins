@@ -28,15 +28,8 @@ evolve based on feedback before v1.0.
 
 ## Installation
 
-Not yet published to Maven Central. For now, install locally:
-
-```bash
-git clone https://github.com/roz-labs/reins.git
-cd reins
-mvn clean install
-```
-
-Then add the dependency to your project as shown in Quick Start below.
+Published to Maven Central. See [Quick start](#quick-start) below for the
+dependency snippet.
 
 ## Example project
 
