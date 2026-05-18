@@ -16,6 +16,15 @@ Inspired by Stanford IRIS Lab's [Meta-Harness](https://arxiv.org/abs/2603.28052)
 
 Early development (v0.1.0). API may change.
 
+## Example project
+
+A reference RAG demo using Reins lives at
+[ridvanozcan91/reins-demo](https://github.com/ridvanozcan91/reins-demo). It
+defines two versions of the same retrieval-augmented chatbot harness — a
+minimal baseline prompt and a detailed few-shot-grounded prompt — runs the
+same 10-case eval dataset against both, and reports the pass-rate delta.
+Runs locally on Ollama; no API keys, no cloud dependency.
+
 ## Quick start
 
 ### 1. Add the dependency
