@@ -6,8 +6,8 @@ import io.github.ridvanozcan91.reins.eval.ExactMatchSimilarityCalculator;
 import io.github.ridvanozcan91.reins.eval.SimilarityCalculator;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -30,21 +30,20 @@ public class ReinsAutoConfiguration {
     }
 
     /**
-     * Preferred similarity calculator: cosine similarity of Spring AI embeddings.
-     * Active when an {@code EmbeddingModel} bean is available and no other
-     * {@link SimilarityCalculator} has been defined.
+     * Default {@link SimilarityCalculator}. Resolves an {@link EmbeddingModel} lazily via
+     * {@link ObjectProvider} so the choice happens at bean instantiation — after every
+     * auto-configuration has had a chance to register its embedding model — rather than at
+     * auto-config registration time, which is what {@code @ConditionalOnBean} would do.
+     *
+     * <p>Prefers cosine similarity over Spring AI embeddings when a model is available;
+     * falls back to exact-match otherwise.
      */
     @Bean
-    @ConditionalOnBean(EmbeddingModel.class)
     @ConditionalOnMissingBean(SimilarityCalculator.class)
-    public SimilarityCalculator embeddingSimilarityCalculator(EmbeddingModel embeddingModel) {
-        return new EmbeddingSimilarityCalculator(embeddingModel);
-    }
-
-    /** Fallback similarity calculator used when no embedding model is available. */
-    @Bean
-    @ConditionalOnMissingBean(SimilarityCalculator.class)
-    public SimilarityCalculator exactMatchSimilarityCalculator() {
-        return new ExactMatchSimilarityCalculator();
+    public SimilarityCalculator similarityCalculator(ObjectProvider<EmbeddingModel> embeddingModels) {
+        EmbeddingModel model = embeddingModels.getIfAvailable();
+        return model != null
+            ? new EmbeddingSimilarityCalculator(model)
+            : new ExactMatchSimilarityCalculator();
     }
 }
