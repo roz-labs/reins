@@ -10,6 +10,7 @@ public class EmbeddingSimilarityCalculator implements SimilarityCalculator {
 
     private final EmbeddingModel embeddingModel;
 
+    /** Construct a calculator backed by the given embedding model. */
     public EmbeddingSimilarityCalculator(EmbeddingModel embeddingModel) {
         this.embeddingModel = embeddingModel;
     }

@@ -11,6 +11,10 @@ public final class ConsoleReporter {
 
     private ConsoleReporter() {}
 
+    /**
+     * Print a summary box for the given test class's results to {@link System#out}.
+     * If any result failed, a "Failures" section is appended.
+     */
     public static void print(String testClass, List<EvalResult> results) {
         int total = results.size();
         long passed = results.stream().filter(EvalResult::passed).count();

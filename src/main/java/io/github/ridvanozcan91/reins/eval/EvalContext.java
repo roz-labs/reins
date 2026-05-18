@@ -19,6 +19,9 @@ public class EvalContext {
     private Double similarity;
     private boolean recorded = false;
 
+    /**
+     * Construct a context for one eval case. Captures the start time for latency reporting.
+     */
     public EvalContext(
             EvalCase testCase,
             double similarityThreshold,
@@ -55,11 +58,24 @@ public class EvalContext {
         }
     }
 
+    /** The eval case being executed. */
     public EvalCase testCase() { return testCase; }
+
+    /** The actual output recorded via {@link #record(String)}, or {@code null} if not yet recorded. */
     public String actualOutput() { return actualOutput; }
+
+    /** Similarity score in [0, 1], or {@code null} if {@link #record(String)} has not been called. */
     public Double similarity() { return similarity; }
+
+    /** Minimum similarity required for the case to pass. */
     public double threshold() { return similarityThreshold; }
+
+    /** Elapsed wall-clock time since this context was created, in milliseconds. */
     public long latencyMs() { return System.currentTimeMillis() - startedAt; }
+
+    /** Whether {@link #record(String)} has been called for this case. */
     public boolean recorded() { return recorded; }
+
+    /** Simple name of the test class that owns this case, used to scope reports. */
     public String testClassName() { return testClassName; }
 }

@@ -27,6 +27,11 @@ public final class JsonReporter {
 
     private JsonReporter() {}
 
+    /**
+     * Serialize the results to a timestamped JSON file under {@code target/reins-reports/}.
+     *
+     * @return the path of the written file, or {@code null} if an IO error occurred
+     */
     public static Path write(String testClass, List<EvalResult> results) {
         try {
             Files.createDirectories(REPORT_DIR);
@@ -53,6 +58,7 @@ public final class JsonReporter {
         }
     }
 
+    /** Top-level shape of an emitted JSON report. */
     public record ReportPayload(
         String testClass,
         Instant generatedAt,
