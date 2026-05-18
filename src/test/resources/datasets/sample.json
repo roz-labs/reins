@@ -1,0 +1,4 @@
+[
+  {"id": "t1", "input": "hello", "expected": "hi"},
+  {"id": "t2", "input": "bye", "expected": "goodbye", "metadata": {"lang": "en"}}
+]

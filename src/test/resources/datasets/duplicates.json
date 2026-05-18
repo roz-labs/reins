@@ -1,0 +1,4 @@
+[
+  {"id": "dup", "input": "first", "expected": "a"},
+  {"id": "dup", "input": "second", "expected": "b"}
+]
